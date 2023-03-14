@@ -42,7 +42,6 @@ public class MainActivity extends AppCompatActivity {
             = MediaType.get("application/json; charset=utf-8");
     OkHttpClient client = new OkHttpClient();
     private EditText keyEdit;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -104,7 +103,6 @@ public class MainActivity extends AppCompatActivity {
                 .header("Authorization", "Bearer " + keyEdit.getText().toString())
                 .post(body)
                 .build();
-
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
