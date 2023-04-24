@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -13,10 +14,6 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
             = MediaType.get("application/json; charset=utf-8");
     OkHttpClient client = new OkHttpClient();
     private EditText keyEdit;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,7 +63,11 @@ public class MainActivity extends AppCompatActivity {
             String question = messageEditText.getText().toString().trim();
             addToChat(question, Message.SENT_BY_ME);
             messageEditText.setText("");
-            callAPI(question);
+            if (!TextUtils.isEmpty(keyEdit.getText().toString()) && Integer.parseInt(keyEdit.getText().toString()) == 1) {
+                callAPI(question);
+            } else {
+                callAPI2(question);
+            }
             welcomeTextView.setVisibility(View.GONE);
         });
     }
@@ -88,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
 
     void callAPI(String question) {
         //okhttp
-        messageList.add(new Message("Typing... ", Message.SENT_BY_BOT));
+        messageList.add(new Message("搜索... ", Message.SENT_BY_BOT));
 
         ChatInfo chatInfo = new ChatInfo();
         chatInfo.messages.add(new ChatInfo.MessagesBean(question));
@@ -106,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                addResponse("Failed to load response due to " + e.getMessage());
+                addResponse("出错啦! 在试一次～ " + e.getMessage());
             }
 
             @Override
@@ -119,10 +121,34 @@ public class MainActivity extends AppCompatActivity {
                     ResponseInfo responseInfo = new Gson().fromJson(data, ResponseInfo.class);
                     addResponse(responseInfo.choices.get(0).message.content);
                 } else {
-                    addResponse("Failed to load response due to " + response.body().string());
+                    addResponse("出错啦! 在试一次～ " + response.body().string());
                 }
             }
         });
+    }
+
+    void callAPI2(String question) {
+        messageList.add(new Message("搜索... ", Message.SENT_BY_BOT));
+
+        OpenAIMsgBean reqMsg = new OpenAIMsgBean(OpenAIRequestHelper.OPENAI_ROLE_USER, question);
+        OpenAIReqBean openAIReqBean = new OpenAIReqBean();
+        openAIReqBean.messages.add(reqMsg);
+        new OpenAIRequestHelper().sendChatMsg(openAIReqBean, new OpenAIRequestHelper.OpenAIRequestCallback() {
+            @Override
+            public void onSuccess(OpenAIResponseBean res) {
+                try {
+                    addResponse(res.choices.get(0).message.content);
+                } catch (Exception e) {
+                    addResponse("出错啦! 在试一次～");
+                }
+            }
+
+            @Override
+            public void onError(String errMsg) {
+                addResponse(errMsg);
+            }
+        });
+
     }
 }
 
