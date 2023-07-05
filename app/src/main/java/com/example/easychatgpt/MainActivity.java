@@ -5,6 +5,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -12,6 +15,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 
@@ -27,7 +31,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements AdapterCallback {
     private static final String TAG = MainActivity.class.getName();
     RecyclerView recyclerView;
     TextView welcomeTextView;
@@ -39,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
             = MediaType.get("application/json; charset=utf-8");
     OkHttpClient client = new OkHttpClient();
     private EditText keyEdit;
+    private ClipboardManager manager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         messageList = new ArrayList<>();
         keyEdit = findViewById(R.id.key_edit);
+        manager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
 
         recyclerView = findViewById(R.id.recycler_view);
         welcomeTextView = findViewById(R.id.welcome_text);
@@ -53,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
         sendButton = findViewById(R.id.send_btn);
 
         //setup recycler view
-        messageAdapter = new MessageAdapter(messageList);
+        messageAdapter = new MessageAdapter(messageList, this);
         recyclerView.setAdapter(messageAdapter);
         LinearLayoutManager llm = new LinearLayoutManager(this);
         llm.setStackFromEnd(true);
@@ -149,6 +155,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    public void itemLongEvent(String data) {
+        ClipData mClipData = ClipData.newPlainText("Label", data);
+        manager.setPrimaryClip(mClipData);
+        Toast.makeText(this, "复制成功", Toast.LENGTH_SHORT).show();
     }
 }
 
