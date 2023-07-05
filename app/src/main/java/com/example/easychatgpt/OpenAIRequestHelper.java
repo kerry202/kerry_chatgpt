@@ -25,6 +25,9 @@ public class OpenAIRequestHelper {
     public static final String OPENAI_ROLE_SYSTEM = "system";
     public static final String OPENAI_ROLE_USER = "user";
     public static final String OPENAI_ROLE_ASSISTANT = "assistant";
+    private static final String OPENAI_API_KEY = "c069828a655e44cb9f84ea87fe9aae5d";
+
+    private static final String OPENAI_API_BASE = "https://g35-openai-china.openai.azure.com/";
     private static final String DEPLOYMENT_NAME = "gpt-35-turbo3-southcentralus";
     private static final String OPENAI_URL = OPENAI_API_BASE
             + "openai/deployments/"
