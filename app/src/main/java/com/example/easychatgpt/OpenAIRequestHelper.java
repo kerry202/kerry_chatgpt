@@ -21,7 +21,9 @@ import okhttp3.Response;
 public class OpenAIRequestHelper {
     private static final String TAG = OpenAIRequestHelper.class.getSimpleName();
     private static final MediaType JSON = MediaType.parse("application/json");
+    private static final String OPENAI_API_KEY = "c069828a655e44cb9f84ea87fe9aae5d";
 
+    private static final String OPENAI_API_BASE = "https://g35-openai-china.openai.azure.com/";
     public static final String OPENAI_ROLE_SYSTEM = "system";
     public static final String OPENAI_ROLE_USER = "user";
     public static final String OPENAI_ROLE_ASSISTANT = "assistant";

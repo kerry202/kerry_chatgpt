@@ -41,6 +41,13 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
             holder.leftChatView.setVisibility(View.VISIBLE);
             holder.leftTextView.setText(message.getMessage());
         }
+        holder.rightChatView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                callback.itemLongEvent(message.getMessage());
+                return false;
+            }
+        });
         holder.leftTextView.setOnLongClickListener(v -> {
             callback.itemLongEvent(message.getMessage());
             return false;
